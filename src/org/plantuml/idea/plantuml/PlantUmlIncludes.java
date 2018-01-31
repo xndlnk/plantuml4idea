@@ -1,20 +1,20 @@
 package org.plantuml.idea.plantuml;
 
+import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.util.ui.UIUtil;
 import net.sourceforge.plantuml.BlockUmlBuilder;
 import net.sourceforge.plantuml.preproc.Defines;
 import net.sourceforge.plantuml.preproc.FileWithSuffix;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.plantuml.idea.lang.settings.PlantUmlSettings;
+import org.plantuml.idea.rendering.RenderingCancelledException;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 
@@ -38,25 +38,36 @@ public class PlantUmlIncludes {
                 }
                 return fileLongHashMap;
             }
-        } catch (IOException e) {
-            logger.error(source + "; baseDir=" + baseDir.getAbsolutePath(), e);
+        } catch (InterruptedException e) {
+            throw new RenderingCancelledException(e);
+        } catch (Throwable e) {
+            throw new RuntimeException(source + "; baseDir=" + baseDir.getAbsolutePath(), e);
         } finally {
             PlantUmlSettings.getInstance().applyPlantumlOptions();
         }
         return Collections.emptyMap();
     }
 
-    private static void saveModifiedFiles(final Set<File> files) {
-        UIUtil.invokeAndWaitIfNeeded(new Runnable() {
-            @Override
-            public void run() {
-                FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
-                Set<Document> unsavedDocuments = getUnsavedDocuments(files, fileDocumentManager);
-                for (Document unsavedDocument : unsavedDocuments) {
-                    fileDocumentManager.saveDocument(unsavedDocument);
+	private static void saveModifiedFiles(final Set<File> files) throws Throwable {
+        try {
+            TransactionGuard.getInstance().submitTransactionAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
+                    Set<Document> unsavedDocuments = getUnsavedDocuments(files, fileDocumentManager);
+                    for (Document unsavedDocument : unsavedDocuments) {
+                        fileDocumentManager.saveDocument(unsavedDocument);
+                    }
                 }
+            });
+        } catch (Throwable e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof InterruptedException) {
+                throw new RenderingCancelledException((InterruptedException) cause);
             }
-        });
+            throw e;
+        }
+        ;
     }
 
     @NotNull

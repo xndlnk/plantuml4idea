@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import org.plantuml.idea.lang.settings.PlantUmlSettings;
 import org.plantuml.idea.plantuml.PlantUml;
 import org.plantuml.idea.plantuml.PlantUmlIncludes;
+import org.plantuml.idea.util.UIUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -97,11 +98,11 @@ public class PlantUmlExternalAnnotator extends ExternalAnnotator<PsiFile, FileAn
             String beforeInclude = StringUtils.substringBefore(source, "!include");
             int includeLineNumber = StringUtils.splitPreserveAllTokens(beforeInclude, "\n").length;
             //todo hack because plantuml returns line number from source with inlined includes
-            if (syntaxResult.getErrorLinePosition() < includeLineNumber) {
+            if (syntaxResult.getLineLocation().getPosition() < includeLineNumber) {
                 ErrorSourceAnnotation errorSourceAnnotation = new ErrorSourceAnnotation(
-                        syntaxResult.getErrors(),
-                        syntaxResult.getSuggest(),
-                        syntaxResult.getErrorLinePosition()
+                    syntaxResult.getErrors(),
+                    syntaxResult.getSuggest(),
+                    syntaxResult.getLineLocation().getPosition()
                 );
                 result.add(errorSourceAnnotation);
             }
@@ -112,9 +113,11 @@ public class PlantUmlExternalAnnotator extends ExternalAnnotator<PsiFile, FileAn
     private SyntaxResult checkSyntax(PsiFile file, String source) {
 
         try {
-            File baseDir = new File(file.getVirtualFile().getParent().getPath());
-            FileSystem.getInstance().setCurrentDir(baseDir);
-            PlantUmlIncludes.commitIncludes(source, baseDir);
+            File baseDir = UIUtils.getParent(file.getVirtualFile());
+            if (baseDir != null) {
+                FileSystem.getInstance().setCurrentDir(baseDir);
+                PlantUmlIncludes.commitIncludes(source, baseDir);
+            }
             return SyntaxChecker.checkSyntaxFair(source);
         } finally {
             FileSystem.getInstance().reset();
