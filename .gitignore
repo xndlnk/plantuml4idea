@@ -16,3 +16,4 @@ plantuml4idea.zip
 /build/
 gradle-app.setting
 .gradletasknamecache
+login.properties
