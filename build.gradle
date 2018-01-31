@@ -4,20 +4,28 @@ plugins {
 
 intellij {
     version '181.3007.14'
-    updateSinceUntilBuild = false
-
+    updateSinceUntilBuild = true
     publish {
         apply from: "login.properties"
-    }
+    } 
 }
 
 dependencies {
-    compile fileTree(dir: 'lib', include: '*.jar') 
+    compile fileTree(dir: 'lib', include: '*.jar')
     testCompile 'junit:junit:4.12'
 }
 
+// Simple function to load change-notes.html and description.html into valid text for plugin.xml  (from https://github.com/halirutan/IntelliJ-Key-Promoter-X/blob/master/build.gradle)
+def htmlFixer = { f -> file(f).text.replace('<html>', '').replace('</html>', '') }
+
 patchPluginXml {
     version '2.10.1'   // UPDATE ME!!!!
+    // see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
+    sinceBuild ='162.000'
+    untilBuild ='999.000'   
+    
+    changeNotes = htmlFixer('change-notes.html')
+    pluginDescription = htmlFixer('description.html')
 }
 
 apply plugin: 'java'
