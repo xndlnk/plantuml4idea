@@ -12,12 +12,12 @@ intellij {
 }
 
 dependencies {
-    compile files('lib/plantuml.1.2017.12.jar')
+    compile fileTree(dir: 'lib', include: '*.jar') 
     testCompile 'junit:junit:4.12'
 }
 
 patchPluginXml {
-    version '2.9.0'   // UPDATE ME!!!!
+    version '2.10.0'   // UPDATE ME!!!!
 //    IJ 12+
     sinceBuild '129.000'
 }
