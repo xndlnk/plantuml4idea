@@ -21,7 +21,6 @@ patchPluginXml {
 }
 
 apply plugin: 'java'
-apply plugin: 'org.jetbrains.intellij'
 
 compileJava.options.encoding = 'UTF-8'
 sourceCompatibility = '1.8'
