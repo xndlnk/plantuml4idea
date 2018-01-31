@@ -17,7 +17,7 @@ dependencies {
 }
 
 patchPluginXml {
-    version '2.10.0'   // UPDATE ME!!!!
+    version '2.10.1'   // UPDATE ME!!!!
 }
 
 apply plugin: 'java'

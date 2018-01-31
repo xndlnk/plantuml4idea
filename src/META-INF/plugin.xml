@@ -4,7 +4,7 @@
     
     <!-- will be replaced by gradle -->
     <version>1</version>
-    <idea-version since-build="129.000"/>
+    <idea-version since-build="162.000"/>
     
     <description>PlantUML diagramming tool integration</description>
 
