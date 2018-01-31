@@ -1,17 +1,33 @@
 plugins {
-  id "org.jetbrains.intellij" version "0.2.9"
+    id "org.jetbrains.intellij" version "0.2.18"  // https://plugins.gradle.org/plugin/org.jetbrains.intellij
+}
+
+intellij {
+    version '181.3007.14'
+    updateSinceUntilBuild = false
+
+    publish {
+        apply from: "login.properties"
+    }
+}
+
+dependencies {
+    compile files('lib/plantuml.1.2017.12.jar')
+    testCompile 'junit:junit:4.12'
+}
+
+patchPluginXml {
+    version '2.9.0'   // UPDATE ME!!!!
+//    IJ 12+
+    sinceBuild '129.000'
 }
 
 apply plugin: 'java'
+apply plugin: 'org.jetbrains.intellij'
 
 compileJava.options.encoding = 'UTF-8'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
-
-dependencies {
-    compile files('lib/plantuml.1.2017.12.jar') 
-    testCompile 'junit:junit:4.12'
-}
 
 // non-standad layout was used, hence this override
 sourceSets {
@@ -32,9 +48,16 @@ sourceSets {
         }
     }
 }
-// non-standad layout was used, hence this override
-processResources {
-    into('META-INF') {
-		from('META-INF') 
-	}
+
+repositories {
+    maven {
+        url 'http://repo1.maven.org/maven2'
+    }
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+    maven {
+        url 'http://dl.bintray.com/jetbrains/intellij-plugin-service'
+    }
 }
+        
