@@ -175,7 +175,7 @@
        ]]>
     </change-notes>
     <depends>com.intellij.modules.platform</depends>
-    <depends optional="true">com.intellij.platform.images</depends>
+    <depends>com.intellij.modules.lang</depends>
 
     <application-components>
         <!-- Add your application components here -->
@@ -256,6 +256,10 @@
             <action id="NewPlantUMLFile" class="org.plantuml.idea.plantuml.CreatePlantUMLFileAction"/>
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
         </group>
+
+        <action id="org.plantuml.idea.overlay.actions.VisualizeAction" class="org.plantuml.idea.overlay.actions.VisualizeAction" text="Visualize Usages" description="Just an example action.">
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="FindUsages"/>
+        </action>
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">

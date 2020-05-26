@@ -2,6 +2,7 @@ package org.plantuml.idea.util;
 
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -13,7 +14,7 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.plantuml.idea.plantuml.PlantUml;
+import org.plantuml.idea.overlay.service.OverlayService;
 import org.plantuml.idea.rendering.LazyApplicationPoolExecutor;
 import org.plantuml.idea.rendering.RenderCommand;
 import org.plantuml.idea.toolwindow.PlantUmlToolWindow;
@@ -44,14 +45,19 @@ public class UIUtils {
     public static String getSelectedSourceWithCaret(FileEditorManager instance) {
         String source = "";
 
-        Editor selectedTextEditor = getSelectedTextEditor(instance);
+        OverlayService overlayService = ServiceManager.getService(instance.getProject(), OverlayService.class);
+        String textRepresentation = overlayService.getPlantUmlDocument().getTextRepresentation();
+        System.out.println(textRepresentation);
+        return textRepresentation;
 
-        if (selectedTextEditor != null) {
-            final Document document = selectedTextEditor.getDocument();
-            int offset = selectedTextEditor.getCaretModel().getOffset();
-            source = PlantUml.extractSource(document.getText(), offset);
-        }
-        return source;
+//        Editor selectedTextEditor = getSelectedTextEditor(instance);
+//
+//        if (selectedTextEditor != null) {
+//            final Document document = selectedTextEditor.getDocument();
+//            int offset = selectedTextEditor.getCaretModel().getOffset();
+//            source = PlantUml.extractSource(document.getText(), offset);
+//        }
+//        return source;
     }
 
     /**
